@@ -1,0 +1,27 @@
+name: dog_ceo_signals_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bloc_signals: ^1.2.0
+  bloc_signals_flutter: ^1.2.2
+
+  http: ^1.2.0
+  go_router: ^17.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  
+flutter:
+  uses-material-design: true
+
