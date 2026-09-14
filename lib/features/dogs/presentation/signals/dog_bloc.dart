@@ -31,6 +31,7 @@ class DogBloc extends BlocSignal<DogEvent, DogState> {
         emit(DogFailure(error.toString()));
       }
     });
+
     on<RandomDogPageSelected>((event, emit) async {
       emit(const DogLoading());
 
@@ -51,13 +52,24 @@ class DogBloc extends BlocSignal<DogEvent, DogState> {
         emit(DogFailure(error.toString()));
       }
     });
+
     on<ShowBreedPhotosSelected>((event, emit) async {
-      emit(const DogLoading());
+      _selectedBreed = event.breed;
+
+      emit(
+        DogSuccess(
+          _randomDog ?? const Dog(imageUrl: ''),
+          breeds: _breeds,
+          selectedBreed: _selectedBreed,
+          breedImages: _breedImages,
+          isLoadingImages: true,
+          breedImagesError: null,
+        ),
+      );
 
       try {
         final images = await _repository.getBreedImages(event.breed);
 
-        _selectedBreed = event.breed;
         _breedImages = List.unmodifiable(images);
 
         emit(
@@ -66,12 +78,24 @@ class DogBloc extends BlocSignal<DogEvent, DogState> {
             breeds: _breeds,
             selectedBreed: _selectedBreed,
             breedImages: _breedImages,
+            isLoadingImages: false,
+            breedImagesError: null,
           ),
         );
       } catch (error) {
-        emit(DogFailure(error.toString()));
+        emit(
+          DogSuccess(
+            _randomDog ?? const Dog(imageUrl: ''),
+            breeds: _breeds,
+            selectedBreed: _selectedBreed,
+            breedImages: _breedImages,
+            isLoadingImages: false,
+            breedImagesError: error.toString(),
+          ),
+        );
       }
     });
+
     add(const HomePageDisplayed());
   }
 

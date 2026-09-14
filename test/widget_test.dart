@@ -6,7 +6,7 @@ void main() {
     await tester.pumpWidget(const App());
 
     expect(find.text('Home Page'), findsOneWidget);
-    expect(find.text('Go to the Random Dog screen'), findsOneWidget);
-    expect(find.text('Go to the Show Breed Photos screen'), findsOneWidget);
+    expect(find.text('Go to the Random Dog page'), findsOneWidget);
+    expect(find.text('Go to the Show Breed Photos page'), findsOneWidget);
   });
 }

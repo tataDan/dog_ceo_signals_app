@@ -1,7 +1,6 @@
+import 'package:dog_ceo_signals_app/core/constants/api_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../../core/constants/api_constants.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -13,7 +12,7 @@ class HomePage extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isNarrow =
-              constraints.maxWidth < ApiConstants.maxWidthConstraint;
+              constraints.maxWidth < ApiConstants.narrowScreenBreakpoint;
 
           return Center(
             child: Flex(

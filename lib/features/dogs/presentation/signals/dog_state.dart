@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/dog.dart';
 
@@ -21,12 +21,18 @@ final class DogSuccess extends DogState {
     this.breeds = const <String>[],
     this.selectedBreed,
     this.breedImages = const <String>[],
+    this.isLoadingImages = false,
+    this.breedImagesError,
   });
 
   final Dog dog;
   final List<String> breeds;
   final String? selectedBreed;
   final List<String> breedImages;
+
+  final bool isLoadingImages;
+
+  final String? breedImagesError;
 
   @override
   bool operator ==(Object other) =>
@@ -36,22 +42,33 @@ final class DogSuccess extends DogState {
           dog == other.dog &&
           _listEquals(breeds, other.breeds) &&
           selectedBreed == other.selectedBreed &&
-          _listEquals(breedImages, other.breedImages);
+          _listEquals(breedImages, other.breedImages) &&
+          isLoadingImages == other.isLoadingImages &&
+          breedImagesError == other.breedImagesError;
 
   @override
   int get hashCode => Object.hash(
-        dog,
-        Object.hashAll(breeds),
-        selectedBreed,
-        Object.hashAll(breedImages),
-      );
+    dog,
+    Object.hashAll(breeds),
+    selectedBreed,
+    Object.hashAll(breedImages),
+    isLoadingImages,
+    breedImagesError,
+  );
 
   static bool _listEquals<T>(List<T> a, List<T> b) {
-    if (identical(a, b)) return true;
-    if (a.length != b.length) return false;
+    if (identical(a, b)) {
+      return true;
+    }
+
+    if (a.length != b.length) {
+      return false;
+    }
 
     for (var i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
+      if (a[i] != b[i]) {
+        return false;
+      }
     }
 
     return true;

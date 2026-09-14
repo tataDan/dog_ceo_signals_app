@@ -13,6 +13,7 @@ void main() {
   runApp(
     BlocSignalProvider<DogBloc>(
       create: (_) => DogBloc(repository),
+      lazy: false,
       child: const App(),
     ),
   );
