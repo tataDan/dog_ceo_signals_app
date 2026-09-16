@@ -14,17 +14,14 @@ class DogBloc extends BlocSignal<DogEvent, DogState> {
         final random = await _repository.getRandomDog();
         final breeds = await _repository.getBreeds();
 
-        _randomDog = Dog(imageUrl: random);
-        _breeds = List.unmodifiable(breeds);
-        _selectedBreed = null;
-        _breedImages = const <String>[];
-
         emit(
           DogSuccess(
-            _randomDog!,
-            breeds: _breeds,
-            selectedBreed: _selectedBreed,
-            breedImages: _breedImages,
+            Dog(imageUrl: random),
+            breeds: List.unmodifiable(breeds),
+            selectedBreed: null,
+            breedImages: const <String>[],
+            isLoadingImages: false,
+            breedImagesError: null,
           ),
         );
       } catch (error) {
@@ -33,35 +30,33 @@ class DogBloc extends BlocSignal<DogEvent, DogState> {
     });
 
     on<RandomDogPageSelected>((event, emit) async {
+      final current = stateValue;
+
       emit(const DogLoading());
 
       try {
         final random = await _repository.getRandomDog();
 
-        _randomDog = Dog(imageUrl: random);
+        final currentSuccess = current is DogSuccess
+            ? current
+            : const DogSuccess(Dog(imageUrl: ''));
 
-        emit(
-          DogSuccess(
-            _randomDog!,
-            breeds: _breeds,
-            selectedBreed: _selectedBreed,
-            breedImages: _breedImages,
-          ),
-        );
+        emit(currentSuccess.copyWith(dog: Dog(imageUrl: random)));
       } catch (error) {
         emit(DogFailure(error.toString()));
       }
     });
 
     on<ShowBreedPhotosSelected>((event, emit) async {
-      _selectedBreed = event.breed;
+      final current = stateValue;
+
+      if (current is! DogSuccess) {
+        return;
+      }
 
       emit(
-        DogSuccess(
-          _randomDog ?? const Dog(imageUrl: ''),
-          breeds: _breeds,
-          selectedBreed: _selectedBreed,
-          breedImages: _breedImages,
+        current.copyWith(
+          selectedBreed: event.breed,
           isLoadingImages: true,
           breedImagesError: null,
         ),
@@ -70,39 +65,25 @@ class DogBloc extends BlocSignal<DogEvent, DogState> {
       try {
         final images = await _repository.getBreedImages(event.breed);
 
-        _breedImages = List.unmodifiable(images);
-
         emit(
-          DogSuccess(
-            _randomDog ?? const Dog(imageUrl: ''),
-            breeds: _breeds,
-            selectedBreed: _selectedBreed,
-            breedImages: _breedImages,
+          current.copyWith(
+            selectedBreed: event.breed,
+            breedImages: List.unmodifiable(images),
             isLoadingImages: false,
             breedImagesError: null,
           ),
         );
       } catch (error) {
         emit(
-          DogSuccess(
-            _randomDog ?? const Dog(imageUrl: ''),
-            breeds: _breeds,
-            selectedBreed: _selectedBreed,
-            breedImages: _breedImages,
+          current.copyWith(
+            selectedBreed: event.breed,
             isLoadingImages: false,
             breedImagesError: error.toString(),
           ),
         );
       }
-    });
-
-    add(const HomePageDisplayed());
+    }, transformer: restartable());
   }
 
   final DogRepository _repository;
-
-  Dog? _randomDog;
-  List<String> _breeds = const <String>[];
-  String? _selectedBreed;
-  List<String> _breedImages = const <String>[];
 }

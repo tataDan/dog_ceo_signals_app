@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/dog.dart';
 
+const _unset = Object();
+
 @immutable
 sealed class DogState {
   const DogState();
@@ -29,16 +31,35 @@ final class DogSuccess extends DogState {
   final List<String> breeds;
   final String? selectedBreed;
   final List<String> breedImages;
-
   final bool isLoadingImages;
-
   final String? breedImagesError;
+
+  DogSuccess copyWith({
+    Dog? dog,
+    List<String>? breeds,
+    Object? selectedBreed = _unset,
+    List<String>? breedImages,
+    bool? isLoadingImages,
+    Object? breedImagesError = _unset,
+  }) {
+    return DogSuccess(
+      dog ?? this.dog,
+      breeds: breeds ?? this.breeds,
+      selectedBreed: identical(selectedBreed, _unset)
+          ? this.selectedBreed
+          : selectedBreed as String?,
+      breedImages: breedImages ?? this.breedImages,
+      isLoadingImages: isLoadingImages ?? this.isLoadingImages,
+      breedImagesError: identical(breedImagesError, _unset)
+          ? this.breedImagesError
+          : breedImagesError as String?,
+    );
+  }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is DogSuccess &&
-          runtimeType == other.runtimeType &&
           dog == other.dog &&
           _listEquals(breeds, other.breeds) &&
           selectedBreed == other.selectedBreed &&
@@ -82,10 +103,7 @@ final class DogFailure extends DogState {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DogFailure &&
-          runtimeType == other.runtimeType &&
-          message == other.message;
+      identical(this, other) || other is DogFailure && message == other.message;
 
   @override
   int get hashCode => message.hashCode;
